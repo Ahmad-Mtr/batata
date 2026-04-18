@@ -1,6 +1,8 @@
-# AI Expense Tracker for Roommates
 
 <div align="center">
+<h1>
+AI Expense Tracker for Roommates
+</h1>
   <img src="assets/header.png" alt="AI Expense Tracker Header" width="600" />
   <p><em>Automate tracking shared expenses</em></p>
 </div>
