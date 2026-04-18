@@ -1,9 +1,12 @@
+# AI Expense Tracker for Roommates
 
-# Batata, an Expense Tracker for Roommates
+<div align="center">
+  <img src="assets/header.png" alt="AI Expense Tracker Header" width="600" />
+  <p><em>Automate tracking shared expenses</em></p>
+</div>
 
 A shared expense tracker for two people via an MCP server.
 Both users connect Mistral (Le Chat)/Claude/or any other MCP client to the same MCP server → same DB, in my case I connected Mistral to a Neon DB.
-
 
 ---
 
@@ -20,24 +23,21 @@ Both users connect Mistral (Le Chat)/Claude/or any other MCP client to the same 
 ## 1. Database setup
 
 ### Neon
+
 1. Create a project at https://neon.tech
 2. Open the **SQL Editor** → paste and run `schema.sql`
-
-
-
-
-
 
 ---
 
 ## 2. Connect MCP to your client (Le chat/Mistral) [all roommates to do this step]
 
 > [!NOTE]
+>
 > - We're using `https://mcp.neon.tech/sse` for token based auth.
 > - in this section, all roommates need to do this step.
 
 1. Go to Mistral (needs an account)
-2. Go to Intelligence --> Connectors --> Add a connector (Custom) 
+2. Go to Intelligence --> Connectors --> Add a connector (Custom)
    - Connection Server: `https://mcp.neon.tech/sse`
    - Name: `Neon` (can be changed to smth else)
    - Auth method: `API Token Authentication`
@@ -45,9 +45,10 @@ Both users connect Mistral (Le Chat)/Claude/or any other MCP client to the same 
 
 ---
 
-## 3. create access tokens for all roommates inside neon (for auth) 
-> [IMPORTANT] 
-> Now this might not be the best method since you're sharing your account with someone else, so make sure you trust that person and make sure the Neon project lives on an account that doesn't have sensitive info, I just did this since its the laziest method in my mind, and I trust my roommate. 
+## 3. create access tokens for all roommates inside neon (for auth)
+
+> [IMPORTANT]
+> Now this might not be the best method since you're sharing your account with someone else, so make sure you trust that person and make sure the Neon project lives on an account that doesn't have sensitive info, I just did this since its the laziest method in my mind, and I trust my roommate.
 
 1. In Neon, go to your account settings (from profile)
 2. Go to API Keys
@@ -56,28 +57,30 @@ Both users connect Mistral (Le Chat)/Claude/or any other MCP client to the same 
 ---
 
 ## 4. Complete the connection & create the agent. [all roommates to do this step]
+
 1. in Le Chat, press `connect`, this will prompt you to add your access token (the one from Neon), each user needs to add their own token.
-2. Now go to Agents, create a new Agent, 
+2. Now go to Agents, create a new Agent,
    1. name: `Batata`
    2. Instructions: Paste `sys-prompt.md`
    3. play with other paramaters to your liking
    4. in knowledge, use the Neon MCP connector
-**Note:** sharing agents requires paid account, each user can create his agent with the same settings if suitable.
+      **Note:** sharing agents requires paid account, each user can create his agent with the same settings if suitable.
 
 ---
 
-## 5. Configure your names 
+## 5. Configure your names
 
 In agent chat:
+
 1. `connect to neon, and list roommates schema`
 2. `Insert Roommates` with their data.
 
 ---
+
 ## 6. Usage examples
 
 1. `Insert Roommates`
 2. insert receipt pic without text
-4. `list all roommates`
-5. `list all expenses so far`
-6. `generate monthly summary`
-
+3. `list all roommates`
+4. `list all expenses so far`
+5. `generate monthly summary`
