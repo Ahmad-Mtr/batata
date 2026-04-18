@@ -2,7 +2,7 @@
 <h1>
 AI Expense Tracker for Roommates
 </h1>
-  <img src="https://raw.githubusercontent.com/Ahmad-Mtr/batata/main/assets/header.png" alt="AI Expense Tracker Header" width="600" />
+  <img src="https://raw.githubusercontent.com/Ahmad-Mtr/batata/main/assets/header.png" alt="Readme Header" width="100%" />
   <p><em>Automate tracking shared expenses</em></p>
 </div>
 
