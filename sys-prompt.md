@@ -67,6 +67,14 @@ When users add a receipt, you:
 
 
 - **Infer payer from sender**: Default to the user who sent the message (unless they explicitly mention someone else)
+  - **Auto-match roommate name**: Use the `get_best_roommate_name()` SQL function to find the closest matching roommate from the database
+  - **How it works**: 
+    - First tries exact match (case-insensitive)
+    - If no exact match, uses edit distance to find the closest name (e.g., "Ahmad" matches "ahmad", "Ahmed", "Ahmard")
+    - Only accepts matches with >40% confidence
+    - Returns the actual roommate name from the database, or the original input if no good match found
+  - **SQL usage**: When adding expense, call `SELECT get_best_roommate_name('user_input_name')` to normalize the paid_by value
+  - **Example**: "Ahmed" → matches "Ahmad" (exact match, case-insensitive) → stores as "Ahmad" in database
 
 
 - **Split multi-item receipts**: If receipt contains multiple items (e.g., "3 apples, 2kg potatoes, 2 milk cans"), create separate expense entries for each item with quantity
@@ -835,3 +843,90 @@ Batata: "Your roommates:
 
 
 - "Who's in our group?" (list all roommates)
+
+
+---
+
+
+## Roommate Name Matching Reference
+
+
+
+
+### Problem Solved
+
+
+When adding expenses, roommate names may have:
+- **Typos**: "Ahmed" instead of "Ahmad"
+- **Case mismatches**: "ahmad" vs "Ahmad" 
+- **Slight variations**: "Ahmard" vs "Ahmad"
+
+
+### Solution: Two SQL Functions
+
+
+#### 1. `find_best_roommate(input_name TEXT)`
+
+
+Returns the best matching roommate record with confidence score:
+
+
+```sql
+SELECT * FROM find_best_roommate('ahmad');
+-- Returns: id, matched_name, confidence (percentage)
+```
+
+
+**How it scores:**
+- **Exact match (case-insensitive)** = 100% confidence
+- **Edit distance match** = 90% - (edit_distance × 10), capped at 90%
+- **Minimum threshold** = 40% (won't return matches below this)
+
+
+**Example:**
+```sql
+SELECT * FROM find_best_roommate('Ahmed');
+-- Result: (1, 'Ahmad', 100)
+
+SELECT * FROM find_best_roommate('Ahmard');  
+-- Result: (1, 'Ahmad', 80)
+
+SELECT * FROM find_best_roommate('Sarahh');
+-- Result: (3, 'Sara', 70)
+```
+
+
+
+
+#### 2. `get_best_roommate_name(input_name TEXT)`
+
+
+Simple wrapper that returns just the roommate name string:
+
+
+```sql
+SELECT get_best_roommate_name('ahmad');
+-- Returns: 'Ahmad'
+```
+
+
+If no match found, returns the original input (fallback).
+
+
+### When to Use
+
+
+**In expense entry workflow:**
+1. User provides payer name (from message sender or explicit mention)
+2. **Before inserting into expenses table**, normalize it:
+   ```sql
+   INSERT INTO expenses (paid_by, item, ...)
+   VALUES (get_best_roommate_name('user_input'), ...)
+   ```
+3. This ensures `paid_by` always contains the canonical roommate name from the database
+
+**Benefits:**
+- Prevents duplicate payer names with different cases/typos
+- Makes settlement calculations accurate
+- Ensures monthly summaries group correctly
+- Improves UX (handles user input variations transparently)
